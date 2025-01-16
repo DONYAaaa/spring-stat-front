@@ -8,7 +8,8 @@ import clsx from 'clsx';
 // Depending on the size of the application, this would be stored in a database.
 const links = [
   { name: 'Сплошной контроль', href: '/dashboard/continuous',},
-  { name: 'Контроль комплектов', href: './kit'},
+  { name: 'Контроль комплектов', href: '/dashboard/kit'},
+  { name: 'Пары пружин комплектов', href: '/dashboard/pairs'},
 ];
 
 export default function NavLinks() {

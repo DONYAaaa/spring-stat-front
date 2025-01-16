@@ -1,6 +1,12 @@
 import type { Config } from "tailwindcss";
 
 export default {
+	safelist: [
+		'overflow-hidden',
+		'h-screen',
+		'w-screen'
+	  ],
+	
     darkMode: ["class"],
     content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",

@@ -56,6 +56,13 @@
     --chart-5: 340 75% 55%
   }
 }
+
+html, body {
+  height: 100vh;  /* 100% высоты экрана */
+  overflow-y: hidden; /* Запрещаем прокрутку */
+  overflow-x: hidden; /* Запрещаем прокрутку */
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -1,0 +1,52 @@
+/* Контейнер таблицы */
+.table-container {
+  width: 100%;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Область с прокруткой */
+.table-scroll {
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: auto; /* Добавляем горизонтальную прокрутку */
+  position: relative;
+}
+
+/* Делаем таблицу фиксированной */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Фиксируем ширину столбцов */
+}
+
+/* Убираем sticky у thead */
+thead {
+  background: white;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Фиксируем заголовки столбцов */
+.table-header th {
+  position: sticky;
+  top: 0;
+  z-index: 51;
+  color: white; /* Сделали текст белым */
+  background: #2563eb;
+  padding: 8px 10px;
+  text-align: center;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Выравнивание ячеек */
+.table-cell {
+  text-align: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+}
