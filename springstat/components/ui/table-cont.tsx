@@ -15,6 +15,7 @@ interface TableRowData {
   perpendicularityDeviation: number;
   wireDiameter: number;
   controlDate: string;
+  pngPhotoSidePoints: string | null; // Фото передаётся как Base64
 }
 
 const DataTable = () => {
@@ -33,7 +34,14 @@ const DataTable = () => {
           throw new Error("Ошибка загрузки данных");
         }
         const result: TableRowData[] = await response.json();
-        setData(result);
+
+        // Преобразуем бинарные фото в Base64
+        const transformedData = result.map(row => ({
+          ...row,
+          pngPhotoSidePoints: row.pngPhotoSidePoints ? `data:image/png;base64,${row.pngPhotoSidePoints}` : null
+        }));
+
+        setData(transformedData);
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -58,16 +66,16 @@ const DataTable = () => {
           <Table>
             <TableHeader className="table-header">
               <TableRow>
-                <TableHead className="px-2 py-1">ID</TableHead>
-                <TableHead className="px-2 py-1">Результат Контроля</TableHead>
-                <TableHead className="px-2 py-1">Оператор</TableHead>
-                <TableHead className="px-2 py-1">Тип пружины</TableHead>
-                <TableHead className="px-2 py-1">Высота</TableHead>
-                <TableHead className="px-2 py-1">Наружный Диаметр</TableHead>
-                <TableHead className="px-2 py-1">Внутренний Диаметр</TableHead>
-                <TableHead className="px-2 py-1">Отклонение</TableHead>
-                <TableHead className="px-2 py-1">Диаметр Прутка</TableHead>
-                <TableHead className="px-2 py-1">Дата Контроля</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Результат Контроля</TableHead>
+                <TableHead>Оператор</TableHead>
+                <TableHead>Тип пружины</TableHead>
+                <TableHead>Высота</TableHead>
+                <TableHead>Наружный Диаметр</TableHead>
+                <TableHead>Внутренний Диаметр</TableHead>
+                <TableHead>Отклонение</TableHead>
+                <TableHead>Диаметр Прутка</TableHead>
+                <TableHead>Дата Контроля</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -92,10 +100,10 @@ const DataTable = () => {
                     <TableCell>{row.controlDate}</TableCell>
                   </TableRow>
 
-                  {selectedRowId === row.id && (
+                  {selectedRowId === row.id && row.pngPhotoSidePoints && (
                     <TableRow className="bg-gray-100">
                       <TableCell colSpan={10} className="text-center p-4">
-                        🔍 Здесь будет детальная информация о контроле!
+                        <img src={row.pngPhotoSidePoints} alt="Фото пружины" className="max-w-xs mx-auto" />
                       </TableCell>
                     </TableRow>
                   )}
