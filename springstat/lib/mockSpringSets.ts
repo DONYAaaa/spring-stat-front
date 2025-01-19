@@ -1,10 +1,47 @@
-export const mockSpringSets = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    setNumber: `К-${i + 1}`,
-    controlDate: new Date(2024, 0, i + 1).toISOString().split("T")[0],
-    duration: Math.floor(Math.random() * 120) + 30, // от 30 до 150 минут
-    status: ["Используется", "На ремонте", "Заменен"][Math.floor(Math.random() * 3)],
-    actualChanges: Math.floor(Math.random() * 5),
-    theoreticalReplacements: Math.floor(Math.random() * 10),
-  }));
-  
+export const mockSpringSets = [
+  {
+    id: 1,
+    setNumber: "SPR-001",
+    controlDate: "2024-01-10 12:30:45",
+    duration: 120,
+    status: "Используется",
+    actualChanges: 3,
+    theoreticalReplacements: 5,
+  },
+  {
+    id: 2,
+    setNumber: "SPR-002",
+    controlDate: "2024-01-12 14:15:30",
+    duration: 95,
+    status: "Неисправен",
+    actualChanges: 2,
+    theoreticalReplacements: 4,
+  },
+  {
+    id: 3,
+    setNumber: "SPR-003",
+    controlDate: "2024-01-15 09:45:10",
+    duration: 180,
+    status: "Используется",
+    actualChanges: 5,
+    theoreticalReplacements: 7,
+  },
+  {
+    id: 4,
+    setNumber: "SPR-004",
+    controlDate: "2024-01-18 16:20:55",
+    duration: 150,
+    status: "На проверке",
+    actualChanges: 1,
+    theoreticalReplacements: 3,
+  },
+  {
+    id: 5,
+    setNumber: "SPR-005",
+    controlDate: "2024-01-22 11:05:40",
+    duration: 200,
+    status: "Используется",
+    actualChanges: 6,
+    theoreticalReplacements: 8,
+  }
+];
