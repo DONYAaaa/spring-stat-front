@@ -1,11 +1,10 @@
 import React from "react";
-import SpringPairs from "@/components/ui/springpairtable";
-import { mockSpringPairs } from "@/lib/mockSpringPairs";
+import SpringPairs from "@/components/ui/spring-pair-table";
 import "@/app/globals.css";
 
 const Page = () => {
   return (
-      <SpringPairs data={mockSpringPairs} />
+      <SpringPairs/>
   );
 };
 
