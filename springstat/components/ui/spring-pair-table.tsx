@@ -57,7 +57,6 @@ const SpringPairTable = () => {
     <div className="table-container">
       <>
         <Table>
-          <div className="table-scroll">
           <TableHeader className="table-header">
             <TableRow>
               <TableHead>ID</TableHead>
@@ -67,7 +66,7 @@ const SpringPairTable = () => {
               <TableHead>Подклиновая</TableHead>
             </TableRow>
           </TableHeader>
-          
+
           <TableBody>
             {data.map((pair) => (
               <TableRow key={pair.id} className="text-center">
@@ -79,7 +78,6 @@ const SpringPairTable = () => {
               </TableRow>
             ))}
           </TableBody>
-          </div>
         </Table>
 
         {/* Пагинация внутри того же скроллируемого блока */}

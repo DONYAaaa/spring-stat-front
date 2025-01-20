@@ -97,7 +97,6 @@ const DataTable = () => {
         {!loading && !error && (
           <>
             <Table>
-              <div className="table-scroll">
                 <TableHeader className="table-header">
                   <TableRow>
                     <TableHead>ID</TableHead>
@@ -135,7 +134,6 @@ const DataTable = () => {
                   </TableRow>
                 ))}
               </TableBody>
-              </div>
             </Table>
 
             {/* Пагинация */}

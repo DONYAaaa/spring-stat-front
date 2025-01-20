@@ -1,7 +1,7 @@
 /* Внешний контейнер с белым фоном и скруглёнными углами */
 .table-container {
   width: auto;
-  max-height: 99vh;
+  max-height: 90vh;
   overflow:hidden;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -10,13 +10,6 @@
   flex-direction: column;
 }
 
-/* Скролл внутри */
-.table-scroll { /* или 600px, 90vh — подберите под себя */
-  overflow: auto;
-  max-height: 85vh;
-  position: relative; /* важно для sticky */
-  flex-grow: 1;
-}
 
 table {
   border-collapse: collapse;
