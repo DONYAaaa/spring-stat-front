@@ -3,7 +3,14 @@
 import React, { useState, useEffect } from "react";
 import "@/styles/table.css";
 import Pagination from "@/components/ui/pagination";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
 import PhotoModal from "@/components/ui/photo-modal"; // Подключаем модальное окно
 
 interface TableRowData {
@@ -17,7 +24,7 @@ interface TableRowData {
   perpendicularity: number;
   coilDiameter: number;
   controlDate: string;
-  imageUrl?: string | null; // Добавляем поле для URL фото
+  imageUrl?: string | null; // Поле для URL фото
 }
 
 const PAGE_SIZE = 100;
@@ -31,15 +38,19 @@ const DataTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/spring/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`);
-        if (!response.ok) throw new Error("Ошибка загрузки данных");
-        
+        const response = await fetch(
+          `${API_URL}/api/spring/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
+        );
+        if (!response.ok) {
+          throw new Error("Ошибка загрузки данных");
+        }
+
         const result = await response.json();
         setData(result.data);
         setTotalPages(Math.ceil(result.totalCount / PAGE_SIZE));
@@ -49,9 +60,9 @@ const DataTable = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, API_URL]);
 
   const handleRowClick = async (row: TableRowData) => {
     if (selectedRow?.id === row.id) {
@@ -62,12 +73,13 @@ const DataTable = () => {
 
     setSelectedRow(row);
     setIsModalOpen(true);
-    
+
+    // Если в данных ещё нет imageUrl, делаем запрос за фото
     if (!row.imageUrl) {
       try {
         const response = await fetch(`${API_URL}/api/spring/${row.id}/photo`);
         if (!response.ok) throw new Error("Фото не найдено");
-        
+
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         setSelectedRow((prev) => (prev ? { ...prev, imageUrl: url } : prev));
@@ -79,26 +91,27 @@ const DataTable = () => {
 
   return (
     <div className="table-container">
-      <div className="table-scroll">
         {loading && <p>Загрузка данных...</p>}
         {error && <p className="text-red-500">{error}</p>}
+
         {!loading && !error && (
           <>
             <Table>
-              <TableHeader className="table-header">
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Результат Контроля</TableHead>
-                  <TableHead>Оператор</TableHead>
-                  <TableHead>Тип пружины</TableHead>
-                  <TableHead>Высота</TableHead>
-                  <TableHead>Наружный Диаметр</TableHead>
-                  <TableHead>Внутренний Диаметр</TableHead>
-                  <TableHead>Отклонение</TableHead>
-                  <TableHead>Диаметр Прутка</TableHead>
-                  <TableHead>Дата Контроля</TableHead>
-                </TableRow>
-              </TableHeader>
+              <div className="table-scroll">
+                <TableHeader className="table-header">
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Результат Контроля</TableHead>
+                    <TableHead>Оператор</TableHead>
+                    <TableHead>Тип пружины</TableHead>
+                    <TableHead>Высота</TableHead>
+                    <TableHead>Наружный Диаметр</TableHead>
+                    <TableHead>Внутренний Диаметр</TableHead>
+                    <TableHead>Отклонение</TableHead>
+                    <TableHead>Диаметр Прутка</TableHead>
+                    <TableHead>Дата Контроля</TableHead>
+                  </TableRow>
+                </TableHeader>
 
               <TableBody>
                 {data.map((row) => (
@@ -122,22 +135,22 @@ const DataTable = () => {
                   </TableRow>
                 ))}
               </TableBody>
+              </div>
             </Table>
 
             {/* Пагинация */}
-            <Pagination 
-              currentPage={currentPage} 
-              totalPages={totalPages} 
-              onPageChange={setCurrentPage} 
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
           </>
         )}
-      </div>
 
-      {/* Модальное окно с фото */}
-      <PhotoModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Модальное окно с фото (вне скролла таблицы) */}
+      <PhotoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         imageUrl={selectedRow?.imageUrl || ""}
       />
     </div>
