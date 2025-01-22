@@ -2,7 +2,6 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import SpringPairTable from "@/components/ui/spring-pair-table";
 import SpringTable from "@/components/ui/table-cont";
 
 const SpringSetDetails = () => {
@@ -24,7 +23,7 @@ const SpringSetDetails = () => {
   if (error) return <p className="text-red-500 text-sm">{error}</p>;
 
   return (
-    <div className="container mx-auto p-2 text-sm h-full">
+    <div className="container mx-auto p-2 text-sm overflow-hidden">
       {/* Заголовок и кнопка Назад на одной линии */}
       <div className="flex items-center justify-between mb-2">
         <h1 className="font-bold">Детали комплекта #{id}</h1>
@@ -37,18 +36,7 @@ const SpringSetDetails = () => {
       </div>
 
       {/* Таблица с отдельными пружинами */}
-        <h2 className="font-semibold mb-2">Список пружин</h2>
-        <div className="mb-4 mx-auto h-[70vh] overflow-auto">
-          <SpringTable setId={id} />
-        </div>
-
-      {/* Таблица с парами пружин */}
-      <div className="mb-4 h-4/5">
-        <h2 className="font-semibold mb-2">Пары пружин</h2>
-        <div className="overflow-x-auto">
-          <SpringPairTable setId={id} />
-        </div>
-      </div>
+        <SpringTable setId={id} />
     </div>
   );
 };

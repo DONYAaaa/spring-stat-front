@@ -77,8 +77,7 @@ const SpringSetTable = () => {
             <Table>
               <TableHeader className="table-header">
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Номер комплекта</TableHead>
+                  <TableHead>Номер БР</TableHead>
                   <TableHead>Дата контроля</TableHead>
                   <TableHead>Оператор</TableHead>
                   <TableHead>Длительность</TableHead>
@@ -94,7 +93,6 @@ const SpringSetTable = () => {
                     className="text-center hover:bg-gray-100 hover:cursor-pointer"
                     onClick={() => handleRowClick(set.id)}
                   >
-                    <TableCell>{set.id}</TableCell>
                     <TableCell>{set.numberSet}</TableCell>
                     <TableCell>{set.controlDate}</TableCell>
                     <TableCell>{set.operator}</TableCell>

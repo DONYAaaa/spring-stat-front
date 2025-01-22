@@ -9,7 +9,6 @@ import clsx from 'clsx';
 const links = [
   { name: 'Сплошной контроль', href: '/dashboard/continuous',},
   { name: 'Контроль комплектов', href: '/dashboard/kit'},
-  { name: 'Пары пружин комплектов', href: '/dashboard/pairs'},
 ];
 
 export default function NavLinks() {
