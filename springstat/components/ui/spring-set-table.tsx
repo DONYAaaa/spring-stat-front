@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import "@/styles/table.css";
 import Pagination from "@/components/ui/pagination";
@@ -26,6 +27,8 @@ interface SpringSet {
 const PAGE_SIZE = 100;
 
 const SpringSetTable = () => {
+  const router = useRouter();
+  
   const [data, setData] = useState<SpringSet[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -36,6 +39,8 @@ const SpringSetTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const response = await fetch(
           `${API_URL}/api/springSets/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
@@ -44,10 +49,11 @@ const SpringSetTable = () => {
           throw new Error("Ошибка загрузки данных");
         }
         const result = await response.json();
+
         setData(result.data);
         setTotalPages(Math.ceil(result.totalCount / PAGE_SIZE));
-      } catch (error: any) {
-        setError(error.message);
+      } catch (err: any) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -56,15 +62,19 @@ const SpringSetTable = () => {
     fetchData();
   }, [currentPage, API_URL]);
 
+  // Обработчик клика на всю строку
+  const handleRowClick = (id: number) => {
+    router.push(`/dashboard/by-set/${id}`);
+  };
+
   return (
-    <div className="table-container">
-      {/* Внутренний блок для прокрутки содержимого */}
-        {loading && <p>Загрузка данных...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-        {!loading && !error && (
-          <>
+    <div className="table-container text-sm">
+      {loading && <p>Загрузка данных...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {!loading && !error && (
+        <>
+          <div className="overflow-x-auto mb-2">
             <Table>
-              {/* Заголовок таблицы */}
               <TableHeader className="table-header">
                 <TableRow>
                   <TableHead>ID</TableHead>
@@ -79,7 +89,11 @@ const SpringSetTable = () => {
               </TableHeader>
               <TableBody>
                 {data.map((set) => (
-                  <TableRow key={set.id} className="text-center">
+                  <TableRow
+                    key={set.id}
+                    className="text-center hover:bg-gray-100 hover:cursor-pointer"
+                    onClick={() => handleRowClick(set.id)}
+                  >
                     <TableCell>{set.id}</TableCell>
                     <TableCell>{set.numberSet}</TableCell>
                     <TableCell>{set.controlDate}</TableCell>
@@ -92,15 +106,15 @@ const SpringSetTable = () => {
                 ))}
               </TableBody>
             </Table>
+          </div>
 
-            {/* Пагинация */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </>
-        )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </>
+      )}
     </div>
   );
 };
