@@ -19,7 +19,11 @@ interface SpringSet {
   controlDate: string;
   operator: string;
   duration: number;
-  status: string;
+  completed: string;
+  countInner: number;
+  countOuter: number;
+  countDefect: number;
+  countFaultType: number;
   actualChanges: number;
   theoreticalReplacements: number;
 }
@@ -43,7 +47,7 @@ const SpringSetTable = () => {
       setError(null);
       try {
         const response = await fetch(
-          `${API_URL}/api/springSets/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
+          `${API_URL}/api/Set/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
         );
         if (!response.ok) {
           throw new Error("Ошибка загрузки данных");
@@ -73,15 +77,17 @@ const SpringSetTable = () => {
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && (
         <>
-          <div className="overflow-x-auto mb-2">
             <Table>
               <TableHeader className="table-header">
                 <TableRow>
                   <TableHead>Номер БР</TableHead>
                   <TableHead>Дата контроля</TableHead>
-                  <TableHead>Оператор</TableHead>
                   <TableHead>Длительность</TableHead>
-                  <TableHead>Состояние комплекта</TableHead>
+                  <TableHead>Завершён</TableHead>
+                  <TableHead>Кол-во внутренних</TableHead>
+                  <TableHead>Кол-во наружных</TableHead>
+                  <TableHead>Кол-во брака</TableHead>
+                  <TableHead>Кол-во другого типа</TableHead>
                   <TableHead>Кол-во факт. изменений</TableHead>
                   <TableHead>Кол-во теор. замен</TableHead>
                 </TableRow>
@@ -95,16 +101,18 @@ const SpringSetTable = () => {
                   >
                     <TableCell>{set.numberSet}</TableCell>
                     <TableCell>{set.controlDate}</TableCell>
-                    <TableCell>{set.operator}</TableCell>
                     <TableCell>{set.duration} мин</TableCell>
-                    <TableCell>{set.status}</TableCell>
+                    <TableCell>{set.completed}</TableCell>
+                    <TableCell>{set.countInner}</TableCell>
+                    <TableCell>{set.countOuter}</TableCell>
+                    <TableCell>{set.countDefect}</TableCell>
+                    <TableCell>{set.countFaultType}</TableCell>
                     <TableCell>{set.actualChanges}</TableCell>
                     <TableCell>{set.theoreticalReplacements}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </div>
 
           <Pagination
             currentPage={currentPage}

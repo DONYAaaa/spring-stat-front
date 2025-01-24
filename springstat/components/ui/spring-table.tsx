@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import PhotoModal from "@/components/ui/photo-modal"; // Модальное окно с фото
+import { useRouter } from "next/navigation"; 
 
 // Тип для каждой строки таблицы
 interface TableRowData {
@@ -25,10 +25,12 @@ interface TableRowData {
   perpendicularity: number;
   coilDiameter: number;
   controlDate: string;
-  imageUrl?: string | null; // Фото (если уже загружено)
+  // Новые поля — при запросе одной конкретной пружины
+  pairNumber?: number;
+  isWedge?: string;
+  imageUrl?: string | null; 
 }
 
-// Пропсы компонента, где setId - опционально
 interface DataTableProps {
   setId?: string;
 }
@@ -36,15 +38,14 @@ interface DataTableProps {
 const PAGE_SIZE = 100;
 
 const DataTable: React.FC<DataTableProps> = ({ setId }) => {
+  const router = useRouter();
   const [data, setData] = useState<TableRowData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedRow, setSelectedRow] = useState<TableRowData | null>(null);
-
+  
   // Индикаторы состояния
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -56,13 +57,13 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
       try {
         let response: Response;
 
-        // Если передан непустой setId, грузим одну запись
+        // Если есть setId, грузим одну запись из SpringSet
         if (setId && setId.trim() !== "") {
-          response = await fetch(`${API_URL}/api/spring/${setId}`);
+          response = await fetch(`${API_URL}/api/SpringSet/${setId}`);
         } else {
-          // Иначе грузим пагинированно
+          // Иначе грузим пагинированно из SpringContinuous
           response = await fetch(
-            `${API_URL}/api/spring/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
+            `${API_URL}/api/SpringContinuous/paged?page=${currentPage}&pageSize=${PAGE_SIZE}`
           );
         }
 
@@ -72,16 +73,13 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
 
         const result = await response.json();
 
-        // Если мы запросили одну пружину, на бэкенде может быть:
-        // - одиночный объект
-        // - массив из одного элемента
-        // В любом случае приводим к массиву:
+        // Если запросили одну пружину (setId), результат может быть объектом или массивом
         if (setId && setId.trim() !== "") {
           const singleData = Array.isArray(result) ? result : [result];
           setData(singleData);
-          setTotalPages(1); // одна страница
+          setTotalPages(1); // только одна страница
         } else {
-          // Если список, то предполагаем, что в result есть {data, totalCount}
+          // Если список, предполагаем, что бэкенд возвращает { data, totalCount }
           setData(result.data);
           setTotalPages(Math.ceil(result.totalCount / PAGE_SIZE));
         }
@@ -96,35 +94,9 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
     // Если меняется setId, сбрасываем страницу на 1
   }, [API_URL, setId, currentPage]);
 
-  // Клик по строке: открываем модалку и при необходимости подгружаем фото
-  const handleRowClick = async (row: TableRowData) => {
-    // Если кликнули по той же строке - скрываем модалку
-    if (selectedRow?.id === row.id) {
-      setSelectedRow(null);
-      setIsModalOpen(false);
-      return;
-    }
-
-    setSelectedRow(row);
-    setIsModalOpen(true);
-
-    // Если фото ещё не загружено (imageUrl нет), делаем запрос
-    if (!row.imageUrl) {
-      try {
-        const response = await fetch(`${API_URL}/api/spring/${row.id}/photo`);
-        if (!response.ok) {
-          throw new Error("Фото не найдено");
-        }
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        // Обновляем selectedRow, добавив imageUrl
-        setSelectedRow((prev) => (prev ? { ...prev, imageUrl: url } : prev));
-      } catch {
-        // Если ошибка, значит фото нет
-        setSelectedRow((prev) => (prev ? { ...prev, imageUrl: null } : prev));
-      }
-    }
+  // Вместо открытия модального окна — переходим на страницу /dashboard/spring/[id]
+  const handleRowClick = (row: TableRowData) => {
+    router.push(`/dashboard/spring/${row.id}`);
   };
 
   return (
@@ -132,15 +104,18 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
       {loading && <p>Загрузка данных...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Если нет ошибки и данные загружены */}
       {!loading && !error && (
         <>
           <Table>
             <TableHeader className="table-header">
               <TableRow>
-                <TableHead>ID</TableHead>
+                {setId && setId.trim() !== "" && (
+                  <>
+                    <TableHead>Номер пары</TableHead>
+                    <TableHead>Подклиновая</TableHead>
+                  </>
+                )}
                 <TableHead>Результат Контроля</TableHead>
-                <TableHead>Оператор</TableHead>
                 <TableHead>Тип пружины</TableHead>
                 <TableHead>Высота</TableHead>
                 <TableHead>Наружный Диаметр</TableHead>
@@ -155,27 +130,29 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
               {data.map((row) => (
                 <TableRow
                   key={row.id}
-                  className={`table-row cursor-pointer text-center ${
-                    selectedRow?.id === row.id ? "bg-gray-200" : ""
-                  }`}
+                  className="table-row cursor-pointer text-center hover:bg-gray-200"
                   onClick={() => handleRowClick(row)}
                 >
-                  <TableCell>{row.id}</TableCell>
+                  {setId && setId.trim() !== "" && (
+                    <>
+                      <TableCell>{row.pairNumber ?? ""}</TableCell>
+                      <TableCell>{row.isWedge ?? ""}</TableCell>
+                    </>
+                  )}
                   <TableCell>{row.isAccepted}</TableCell>
-                  <TableCell>{row.operator}</TableCell>
                   <TableCell>{row.springType}</TableCell>
                   <TableCell>{row.height.toFixed(2)}</TableCell>
                   <TableCell>{row.outerDiameter.toFixed(2)}</TableCell>
                   <TableCell>{row.innerDiameter.toFixed(2)}</TableCell>
                   <TableCell>{row.perpendicularity.toFixed(2)}</TableCell>
-                  <TableCell>{row.coilDiameter.toFixed(2)}</TableCell>
+                  <TableCell>{row.coilDiameter}</TableCell>
                   <TableCell>{row.controlDate}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
 
-          {/* Пагинация показывается только если нет setId */}
+          {/* Пагинация показывается только если нет конкретного setId */}
           {(!setId || setId.trim() === "") && (
             <Pagination
               currentPage={currentPage}
@@ -185,13 +162,6 @@ const DataTable: React.FC<DataTableProps> = ({ setId }) => {
           )}
         </>
       )}
-
-      {/* Модальное окно с фото */}
-      <PhotoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        imageUrl={selectedRow?.imageUrl || ""}
-      />
     </div>
   );
 };

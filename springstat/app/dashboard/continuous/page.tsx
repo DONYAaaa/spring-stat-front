@@ -1,5 +1,5 @@
 import React from "react";
-import Table from "@/components/ui/table-cont";
+import Table from "@/components/ui/spring-table";
 import "@/app/globals.css";
 
 const Page = () => {

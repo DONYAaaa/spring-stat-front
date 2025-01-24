@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import SpringTable from "@/components/ui/table-cont";
+import SpringTable from "@/components/ui/spring-table";
 
 const SpringSetDetails = () => {
   const router = useRouter();
