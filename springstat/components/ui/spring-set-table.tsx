@@ -56,8 +56,6 @@ const SpringSetTable = () => {
 
         setData(result.data);
         setTotalPages(Math.ceil(result.totalCount / PAGE_SIZE));
-      } catch (err: any) {
-        setError(err.message);
       } finally {
         setLoading(false);
       }
